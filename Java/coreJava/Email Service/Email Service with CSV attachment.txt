@@ -1,0 +1,79 @@
+ String host="smtp.gmail.com";
+
+  final String user="yourEmail@gmail.com";//change accordingly
+
+  final String password="your password should generate from APP password";//change accordingly
+    
+  String to="targetMail@gmail.com";//change accordingly
+  
+   //Get the session object  
+   Properties props = new Properties();
+  props.setProperty("mail.host", "smtp.gmail.com");
+  props.put("mail.smtp.auth", "true");
+  props.put("mail.smtp.port", "465");
+  props.put("mail.debug", "true");
+  props.put("mail.smtp.socketFactory.port", "465");
+  props.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory");
+  props.put("mail.smtp.socketFactory.fallback", "false");
+
+  Session session = Session.getDefaultInstance(props,
+    new Authenticator() {
+      protected PasswordAuthentication getPasswordAuthentication() {  
+    return new PasswordAuthentication(user,password);  
+      }  
+    });  
+  
+   //Compose the message  
+    try {
+
+
+     BodyPart messageBodyPart = new MimeBodyPart();
+     MimeMessage message = new MimeMessage(session);
+     Multipart multipart = new MimeMultipart();
+
+     messageBodyPart.setText("Here's the file");
+     messageBodyPart = new MimeBodyPart();
+     messageBodyPart.setDataHandler(new DataHandler(new ByteArrayDataSource(CsvFiles.data(),"text/csv")));
+     messageBodyPart.setFileName("testcsv.csv");
+     multipart.addBodyPart(messageBodyPart);
+
+
+     message.setFrom(new InternetAddress(user));  
+     message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));  
+     message.setSubject("javatpoint");  
+     message.setText("This is simple program of sending email using JavaMail API 2");
+     message.setContent(multipart);
+       
+    //send the message  
+     Transport.send(message);  
+  
+     System.out.println("message sent successfully...");  
+   
+     } catch (MessagingException | IOException e) {e.printStackTrace();}
+ }
+
+
+-------------------------------------------------------
+ public static byte[] data() throws IOException {
+        List< Person> listOfRows=new ArrayList<>();
+        listOfRows.add(new Person("1","sajeeth"));
+        listOfRows.add(new Person("01","sajeeth2"));
+        listOfRows.add(new Person("15","sajeeth3"));
+
+
+        String[] headers = { "id", "name",};
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        OutputStreamWriter streamWriter = new OutputStreamWriter(stream);
+        CSVWriter writer = new CSVWriter(streamWriter);
+        writer.writeNext(headers);
+        // listOfRows -> business logic collection containing data for csv rows, as you can see I've separated the declaration of headers
+        listOfRows.forEach(it -> {
+            writer.writeNext(new String[] {it.getId().toString(), it.getName()});
+        });
+
+        streamWriter.flush();
+        byte[] byteArrayOutputStream = stream.toByteArray();
+
+        return byteArrayOutputStream;
+
+    }
