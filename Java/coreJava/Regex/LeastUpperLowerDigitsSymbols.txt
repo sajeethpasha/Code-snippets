@@ -1,0 +1,27 @@
+  public static void main(String[] args) {
+
+        //Pattern p = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)", Pattern.CASE_INSENSITIVE);
+        Pattern p = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])((?=.*\\W)|(?=.*_))^[^ ]+$", Pattern.CASE_INSENSITIVE);
+
+        List<String> lst=new ArrayList<>();
+        lst.add("AAAAA");
+        lst.add("AAAAaa");
+        lst.add("AAAAaa");
+        lst.add("AAAAaa 8");
+        lst.add("AA AAaa^8");
+
+        lst.add("Sajeethpasha1430@gmail.com");
+
+
+        lst.forEach(d->{
+
+
+            Matcher m = p.matcher(d);
+            boolean b = m.find();
+            System.out.println(d+"->"+b);
+
+
+        });
+
+
+    }
